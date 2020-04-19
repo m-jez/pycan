@@ -17,9 +17,9 @@ Driver Requirements:
 """
 import sys
 import time
-import Queue
+import queue
 import threading
-import basedriver
+from pycan.drivers import basedriver
 from pycan.common import CANMessage
 
 QUEUE_DELAY = 1
@@ -37,9 +37,9 @@ class SimCAN(basedriver.BaseDriverAPI):
         self.sim_delay = kwargs.get("inbound_time", DEFAULT_SIM_RX_RATE)
 
         # Build the inbound and output buffers
-        self.inbound = Queue.Queue(MAX_BUFFER_SIZE)
+        self.inbound = queue.Queue(MAX_BUFFER_SIZE)
         self.inbound_count = 0
-        self.outbound = Queue.Queue(MAX_BUFFER_SIZE)
+        self.outbound = queue.Queue(MAX_BUFFER_SIZE)
         self.outbound_count = 0
 
         # Setup the simulated traffic
@@ -64,7 +64,7 @@ class SimCAN(basedriver.BaseDriverAPI):
                 self.outbound.put(message, QUEUE_DELAY)
                 self.outbound_count += 1
                 return True
-            except Queue.Full:
+            except queue.Full:
                 pass
 
     def next_message(self, timeout=None):
@@ -75,7 +75,7 @@ class SimCAN(basedriver.BaseDriverAPI):
                 new_msg = self.inbound.get(timeout=QUEUE_DELAY)
                 self.inbound_count += 1
                 return new_msg
-            except Queue.Empty:
+            except queue.Empty:
                 pass
 
             if timeout is not None:
@@ -93,11 +93,11 @@ class SimCAN(basedriver.BaseDriverAPI):
             try:
                 can_msg = self.outbound.get(timeout=QUEUE_DELAY)
                 time.sleep(CAN_TX_SEND_DELAY)
-            except Queue.Empty:
+            except queue.Empty:
                 continue
 
             if self.verbose:
-                print "\n", can_msg
+                print("\n", can_msg)
 
     def __process_inbound_queue(self):
         while self._running.is_set():
@@ -108,7 +108,7 @@ class SimCAN(basedriver.BaseDriverAPI):
                 self.inbound.put(self.known_msgs[self.inbound_index])
                 self.inbound_index += 1
                 self.inbound_index = self.inbound_index % 8
-            except Queue.Full:
+            except queue.Full:
                 # TODO (A. Lewis) Add logging warning
                 pass
 

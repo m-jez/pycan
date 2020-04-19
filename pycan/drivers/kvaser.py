@@ -17,9 +17,9 @@ Driver Requirements:
     * See Kvaser's website for the latest
 """
 import sys
-import Queue
+import queue
 import threading
-import basedriver
+from pycan.drivers import basedriver
 import time
 from pycan.common import CANMessage
 from ctypes import *
@@ -33,6 +33,7 @@ QUEUE_DELAY = 1  # second
 class Kvaser(basedriver.BaseDriverAPI):
     def __init__(self, **kwargs):
         # Init the Leaf Light HS DLL
+        # FIXME: windll dependency
         windll.canlib32.canInitializeLibrary()
 
         # Open a CAN communication channel
@@ -48,9 +49,9 @@ class Kvaser(basedriver.BaseDriverAPI):
         self.update_bus_parameters()
 
         # Build the inbound and output buffers
-        self.inbound = Queue.Queue(MAX_BUFFER_SIZE)
+        self.inbound = queue.Queue(MAX_BUFFER_SIZE)
         self.inbound_count = 0
-        self.outbound = Queue.Queue(MAX_BUFFER_SIZE)
+        self.outbound = queue.Queue(MAX_BUFFER_SIZE)
         self.outbound_count = 0
 
         # Tell python to check for signals less often (default 1000)
@@ -87,7 +88,7 @@ class Kvaser(basedriver.BaseDriverAPI):
                 self.outbound.put(message, timeout=QUEUE_DELAY)
                 self.outbound_count += 1
                 return True
-            except Queue.Full:
+            except queue.Full:
                 pass
 
     def next_message(self, timeout=None):
@@ -98,7 +99,7 @@ class Kvaser(basedriver.BaseDriverAPI):
                 new_msg = self.inbound.get(timeout=QUEUE_DELAY)
                 self.inbound_count += 1
                 return new_msg
-            except Queue.Empty:
+            except queue.Empty:
                 pass
 
             if timeout is not None:
@@ -115,7 +116,7 @@ class Kvaser(basedriver.BaseDriverAPI):
         while self._running.is_set():
             try:
                 can_msg = self.outbound.get(timeout=QUEUE_DELAY)
-            except Queue.Empty:
+            except queue.Empty:
                 continue
 
             tx_data = (c_uint8 * can_msg.dlc)()
@@ -173,6 +174,6 @@ class Kvaser(basedriver.BaseDriverAPI):
 
                     try:
                         self.inbound.put(new_msg, timeout=QUEUE_DELAY)
-                    except Queue.Full:
+                    except queue.Full:
                         # TODO: flag error
                         pass

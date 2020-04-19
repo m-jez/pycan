@@ -5,7 +5,7 @@
 # can be found in the LICENSE.txt file for the project.
 import os
 import unittest
-from pycan.basedriver import *
+from pycan.drivers.basedriver import *
 from pycan.common import CANMessage
 
 
@@ -26,7 +26,7 @@ def measure_performance(driver, rate, run_time=3.0):
         min(t_stats) * 1000.0,
         (sum(t_stats) / float(len(t_stats))) * 1000.0,
     )
-    print "\nTarget:%1.1f (ms)\nMax %1.1f\nMin %1.1f\nAvg %1.1f" % (
+    print("\nTarget:%1.1f (ms)\nMax %1.1f\nMin %1.1f\nAvg %1.1f") % (
         rate * 1000.0,
         ret[0],
         ret[1],
