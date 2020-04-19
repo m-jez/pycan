@@ -336,7 +336,9 @@ class CANDriverTests(unittest.TestCase):
         )
 
     def __performance_test(self, driver, rate, run_time, tolerances):
-        # Determine the upper and lower bounds based on the tolerance in seconds
+        """Determine the upper and lower bounds based on the tolerance in
+        seconds"""
+
         uTarget, lTarget, aTarget = tolerances
 
         # Scale the seconds to miliseconds
