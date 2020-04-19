@@ -24,9 +24,9 @@ class KvaserTests(unittest.TestCase):
     def __load_test_config(self):
         test_path = os.path.dirname(os.path.abspath(__file__))
         config = ConfigParser.ConfigParser()
-        config.read(os.path.join(test_path, 'test.cfg'))
+        config.read(os.path.join(test_path, "test.cfg"))
 
-        self.known_can_id = int(config.get('COMMON', 'Known_ID_On_Bus'), 16)
+        self.known_can_id = int(config.get("COMMON", "Known_ID_On_Bus"), 16)
 
     def testPEP8Compliance(self):
         # Ensure PEP8 is installed
@@ -37,11 +37,11 @@ class KvaserTests(unittest.TestCase):
 
         # Check the CAN driver
         driver_path = os.path.dirname(driver.__file__)
-        driver_file = os.path.abspath(os.path.join(driver_path, 'kvaser.py'))
+        driver_file = os.path.abspath(os.path.join(driver_path, "kvaser.py"))
         pep8_checker = pep8.Checker(driver_file)
         violation_count = pep8_checker.check_all()
         error_message = "PEP8 violations found: %d" % (violation_count)
-        self.assertTrue(violation_count == 0, msg = error_message)
+        self.assertTrue(violation_count == 0, msg=error_message)
 
     def testDriver(self):
         # Load the real time test configuration
@@ -60,7 +60,7 @@ class KvaserTests(unittest.TestCase):
         # on the wire at 100ms intervals
         messages_to_send = 50
 
-        msg1 = CANMessage(0x123456, [1,2,3])
+        msg1 = CANMessage(0x123456, [1, 2, 3])
         for x in range(messages_to_send):
             time.sleep(0.1)
             msg = "Failed to send message {x}".format(x=x)
@@ -79,7 +79,7 @@ class KvaserTests(unittest.TestCase):
         read_messages = 0
         for x in range(messages_to_receive):
             if self.driver.next_message():
-                self.assertEqual((x+1), self.driver.life_time_received())
+                self.assertEqual((x + 1), self.driver.life_time_received())
 
     def SpecificReceive(self):
         messages_to_receive = 10
@@ -94,6 +94,6 @@ class KvaserTests(unittest.TestCase):
                 actual_messaged_received += 1
 
                 if actual_messaged_received == messages_to_receive:
-                    break;
+                    break
 
         self.assertEqual(actual_messaged_received, messages_to_receive)

@@ -9,6 +9,7 @@ import unittest
 import pycan.drivers.sim_can as driver
 from pycan.common import CANMessage
 
+
 class SimCANTests(unittest.TestCase):
     def tearDown(self):
         try:
@@ -26,11 +27,11 @@ class SimCANTests(unittest.TestCase):
 
         # Check the CAN driver
         driver_path = os.path.dirname(driver.__file__)
-        driver_file = os.path.abspath(os.path.join(driver_path, 'sim_can.py'))
+        driver_file = os.path.abspath(os.path.join(driver_path, "sim_can.py"))
         pep8_checker = pep8.Checker(driver_file)
         violation_count = pep8_checker.check_all()
         error_message = "PEP8 violations found: %d" % (violation_count)
-        self.assertTrue(violation_count == 0, msg = error_message)
+        self.assertTrue(violation_count == 0, msg=error_message)
 
     def testDriver(self):
         # Setup the driver
@@ -43,7 +44,7 @@ class SimCANTests(unittest.TestCase):
     def Transmit(self):
         messages_to_send = int(random.random() * 1000) + 1
 
-        msg1 = CANMessage(0x123456, [1,2,3])
+        msg1 = CANMessage(0x123456, [1, 2, 3])
         for x in range(messages_to_send):
             msg = "Failed to send message {x}".format(x=x)
             self.assertTrue(self.driver.send(msg1), msg)
@@ -61,9 +62,9 @@ class SimCANTests(unittest.TestCase):
         read_messages = 0
         for x in range(messages_to_receive):
             if self.driver.next_message():
-                self.assertEqual((x+1), self.driver.life_time_received())
+                self.assertEqual((x + 1), self.driver.life_time_received())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(SimCANTests)
     unittest.TextTestRunner(verbosity=2).run(suite)
