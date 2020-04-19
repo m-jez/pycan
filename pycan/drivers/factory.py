@@ -33,7 +33,7 @@ def get_driver(config_file):
     config.read(os.path.abspath(config_file))
 
     # Determine what type driver should be used
-    selection = config.get('defaults', 'selection')
+    selection = config.get("defaults", "selection")
 
     if selection not in drivers:
         # TODO: Add a logging error here
@@ -42,7 +42,7 @@ def get_driver(config_file):
 
     # Build the keyword arguments to pass to the driver
     kwargs = {}
-    defaults = config.items('defaults')
+    defaults = config.items("defaults")
     driver_vals = config.items(selection)
 
     for key, val in defaults:
@@ -56,4 +56,4 @@ def get_driver(config_file):
 
 
 if __name__ == "__main__":
-    d = get_driver('setup.cfg')
+    d = get_driver("setup.cfg")

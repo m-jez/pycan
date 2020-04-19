@@ -71,7 +71,7 @@ class TracePlayer(object):
     def __file_player(self):
         while not self.shutdown.is_set():
             # Protect CPU against missing files / stopped state
-            time.sleep(.5)
+            time.sleep(0.5)
 
             # Do not even try to load the files if we are stopped
             if not self.playing.is_set():
@@ -87,11 +87,11 @@ class TracePlayer(object):
                     # Load the file using buffered IO to protect against
                     # large files
                     try:
-                        with open(f, 'r') as fid:
+                        with open(f, "r") as fid:
                             for line in fid:
                                 # Support real time pausing
                                 while self.paused.is_set():
-                                    time.sleep(.5)
+                                    time.sleep(0.5)
 
                                 # Check to see if we should still be running
                                 if self.playing.is_set():
@@ -112,8 +112,8 @@ class TracePlayer(object):
         # Send the next available message
         if self.next_message:
             # Keep trying to send the message (do not throw any away)
-            while(not self.driver.send(self.next_message)):
-                time.sleep(.001)
+            while not self.driver.send(self.next_message):
+                time.sleep(0.001)
 
         # Parse the line and wait
         self.next_message = self.parser.parse_line(line)

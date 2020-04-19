@@ -66,13 +66,15 @@ class Kvaser(basedriver.BaseDriverAPI):
     def update_bus_parameters(self, **kwargs):
         # Default values are setup for a 250k baud and a 75% sample point
         # Set up the timing parameters for the CAN controller
-        windll.canlib32.canSetBusParams(c_int(self._can_channel),
-                                        c_int(kwargs.get("baud", 250000)),
-                                        c_uint(kwargs.get("tseg1", 5)),
-                                        c_uint(kwargs.get("tseg2", 2)),
-                                        c_uint(kwargs.get("sjw", 2)),
-                                        c_uint(kwargs.get("sample_count", 1)),
-                                        c_uint(0))
+        windll.canlib32.canSetBusParams(
+            c_int(self._can_channel),
+            c_int(kwargs.get("baud", 250000)),
+            c_uint(kwargs.get("tseg1", 5)),
+            c_uint(kwargs.get("tseg2", 2)),
+            c_uint(kwargs.get("sjw", 2)),
+            c_uint(kwargs.get("sample_count", 1)),
+            c_uint(0),
+        )
 
     def shutdown(self):
         self._running.clear()
@@ -125,12 +127,14 @@ class Kvaser(basedriver.BaseDriverAPI):
             else:
                 ext = 2
 
-            status = windll.canlib32.canWriteWait(c_int(self._can_channel),
-                                                  c_uint32(can_msg.id),
-                                                  pointer(tx_data),
-                                                  c_int(can_msg.dlc),
-                                                  c_int(ext),
-                                                  c_uint32(CAN_TX_TIMEOUT))
+            status = windll.canlib32.canWriteWait(
+                c_int(self._can_channel),
+                c_uint32(can_msg.id),
+                pointer(tx_data),
+                c_int(can_msg.dlc),
+                c_int(ext),
+                c_uint32(CAN_TX_TIMEOUT),
+            )
         # TODO: Flag error status
 
     def __process_inbound_queue(self):
@@ -141,13 +145,15 @@ class Kvaser(basedriver.BaseDriverAPI):
             rx_time = c_uint(0)
             rx_msg = (c_uint8 * 8)()
 
-            status = windll.canlib32.canReadWait(c_int(self._can_channel),
-                                                 pointer(rx_id),
-                                                 pointer(rx_msg),
-                                                 pointer(rx_dlc),
-                                                 pointer(rx_flags),
-                                                 pointer(rx_time),
-                                                 c_uint32(CAN_RX_TIMEOUT))
+            status = windll.canlib32.canReadWait(
+                c_int(self._can_channel),
+                pointer(rx_id),
+                pointer(rx_msg),
+                pointer(rx_dlc),
+                pointer(rx_flags),
+                pointer(rx_time),
+                c_uint32(CAN_RX_TIMEOUT),
+            )
             if status < 0:
                 pass
                 # TODO: Flag errors

@@ -12,9 +12,9 @@ import time
 import threading
 from pycan.common import CANMessage
 
-DIRTY_WORDS = ['Statistic:', 'date', 'base', 'events', 'version']
-ABS = 'absolute'
-DELTA = 'deltas'
+DIRTY_WORDS = ["Statistic:", "date", "base", "events", "version"]
+ABS = "absolute"
+DELTA = "deltas"
 MIN_DELAY = 0
 
 
@@ -26,17 +26,17 @@ class ASCParser(object):
         self.next_message = None
 
         self.settings = {}
-        self.settings['timestamps'] = ABS
-        self.settings['base'] = 10
+        self.settings["timestamps"] = ABS
+        self.settings["base"] = 10
 
     def parse_line(self, line):
         self.next_message = None
 
         # Compress all of the white space
-        line = ' '.join(line.split())
+        line = " ".join(line.split())
 
         # Split the line prior to parsing
-        split_line = line.strip(' ').split(' ')
+        split_line = line.strip(" ").split(" ")
 
         # Check for ASC settings
         self.__lookup_asc_settings(split_line)
@@ -52,28 +52,28 @@ class ASCParser(object):
 
         # Determine and remove the common line items
         ts = float(split_line.pop(0))
-        chan = split_line.pop(0).strip(' ')
-        can_id = split_line.pop(0).strip(' ')
-        direction = split_line.pop(0).strip(' ')
-        rd_flag = split_line.pop(0).strip(' ')
+        chan = split_line.pop(0).strip(" ")
+        can_id = split_line.pop(0).strip(" ")
+        direction = split_line.pop(0).strip(" ")
+        rd_flag = split_line.pop(0).strip(" ")
 
         # Build valid messages
-        if rd_flag is 'd':
+        if rd_flag is "d":
             # Extract the payload
             dlc = int(split_line.pop(0))
 
             payload = []
             for b in range(dlc):
-                payload.append(int(split_line.pop(0), self.settings['base']))
+                payload.append(int(split_line.pop(0), self.settings["base"]))
 
             # Build the can message and extended flag
-            if can_id[-1] is 'x':
+            if can_id[-1] is "x":
                 can_id = can_id[:-1]
                 ext = True
             else:
                 ext = False
 
-            can_id = int(can_id, self.settings['base'])
+            can_id = int(can_id, self.settings["base"])
 
             # Determine if the message should be excluded from the trace
             msg = CANMessage(can_id, payload, ext)
@@ -98,7 +98,7 @@ class ASCParser(object):
         if self.use_wall:
             if self.last_ts is None:
                 delay = None
-            elif self.settings['timestamps'] == DELTA:
+            elif self.settings["timestamps"] == DELTA:
                 delay = ts
             else:
                 delay = ts - self.last_ts
@@ -118,15 +118,15 @@ class ASCParser(object):
             evt.wait(delay)
 
     def __lookup_asc_settings(self, split_line):
-        keyword = 'base'
+        keyword = "base"
         if keyword in split_line:
             idx = split_line.index(keyword)
-            if split_line[idx + 1].strip().lower() == 'hex':
+            if split_line[idx + 1].strip().lower() == "hex":
                 self.settings[keyword] = 16
             else:
                 self.settings[keyword] = 10
 
-        keyword = 'timestamps'
+        keyword = "timestamps"
         if keyword in split_line:
             idx = split_line.index(keyword)
             if split_line[idx + 1].strip().lower() == ABS:

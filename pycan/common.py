@@ -14,6 +14,7 @@ class CANMessage(object):
         extended: A boolean indicating if the message is a 29 bit message
         ts: An integer representing the time stamp
     """
+
     def __init__(self, id, payload, extended=True, ts=0):
         """Inits CANMesagge."""
         self.id = id
@@ -27,7 +28,7 @@ class CANMessage(object):
             hex(self.id),
             self.dlc,
             str(self.extended),
-            [hex(x) for x in self.payload]
+            [hex(x) for x in self.payload],
         )
 
 
@@ -39,6 +40,7 @@ class IDMaskFilter(object):
         code: An integer representing the id to apply the mask against
         extended: A boolean indicating if the message is a 29 bit message
     """
+
     def __init__(self, mask, code, extended=True):
         """Inits Mask Filter."""
         self.mask = mask

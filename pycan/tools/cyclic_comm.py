@@ -27,6 +27,7 @@ class CyclicMessage(object):
         msg: The CANMessage to be sent
         rate: A float representing the expected transmission rate (seconds)
     """
+
     def __init__(self, msg, rate):
         self.msg = msg
         self.rate = rate
@@ -118,7 +119,7 @@ class CyclicComm(object):
     # TODO: Add a multi-step timer (sleep > 20ms, then busy loop)
     def __cyclic_monitor(self):
         while self._running.is_set():
-            time.sleep(self._cyclic_fastest_rate/5.0)
+            time.sleep(self._cyclic_fastest_rate / 5.0)
             for cyclic in self._cyclic_messages.values():
                 if cyclic.active:
                     if time.time() > cyclic.next_run:

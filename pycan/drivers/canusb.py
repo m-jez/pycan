@@ -24,48 +24,48 @@ from pycan.drivers.basedriver import BaseDriverAPI
 from pycan.common import CANMessage
 import serial
 
-QUEUE_DELAY = .1
+QUEUE_DELAY = 0.1
 CAN_TX_TIMEOUT = 100  # ms
 CAN_RX_TIMEOUT = 100  # ms
 MAX_BUFFER_SIZE = 1000
 COMMAND_TIMEOUT = 1.0  # seconds
-TERMINATORS = ['\r', '\x07']
-STD_MSG_HEADERS = ['t', 'T']
-REM_MSG_HEADERS = ['r', 'R']
+TERMINATORS = ["\r", "\x07"]
+STD_MSG_HEADERS = ["t", "T"]
+REM_MSG_HEADERS = ["r", "R"]
 
 BIT_RATE_CMD = {}
-BIT_RATE_CMD['10K'] = 'S0\r'
-BIT_RATE_CMD['20K'] = 'S1\r'
-BIT_RATE_CMD['50K'] = 'S2\r'
-BIT_RATE_CMD['100K'] = 'S3\r'
-BIT_RATE_CMD['125K'] = 'S4\r'
-BIT_RATE_CMD['250K'] = 'S5\r'
-BIT_RATE_CMD['500K'] = 'S6\r'
-BIT_RATE_CMD['800K'] = 'S7\r'
-BIT_RATE_CMD['1M'] = 'S8\r'
+BIT_RATE_CMD["10K"] = "S0\r"
+BIT_RATE_CMD["20K"] = "S1\r"
+BIT_RATE_CMD["50K"] = "S2\r"
+BIT_RATE_CMD["100K"] = "S3\r"
+BIT_RATE_CMD["125K"] = "S4\r"
+BIT_RATE_CMD["250K"] = "S5\r"
+BIT_RATE_CMD["500K"] = "S6\r"
+BIT_RATE_CMD["800K"] = "S7\r"
+BIT_RATE_CMD["1M"] = "S8\r"
 
-OPEN_CMD = 'O\r'
-CLOSE_CMD = 'C\r'
-TIME_STAMP_CMD = 'Z1\r'
+OPEN_CMD = "O\r"
+CLOSE_CMD = "C\r"
+TIME_STAMP_CMD = "Z1\r"
 
 
 class CANUSB(BaseDriverAPI):
     def __init__(self, **kwargs):
         # Open the COM port
-        port = kwargs['com_port']  # Throws key error
-        baud = int(kwargs.get('com_baud', 115200))
+        port = kwargs["com_port"]  # Throws key error
+        baud = int(kwargs.get("com_baud", 115200))
         self.port = serial.Serial(
             port=port, baudrate=baud, timeout=0.001, writeTimeout=5
         )
         self.port.flushInput()
-        self.rx_buffer = ''
-        self.response = ''
+        self.rx_buffer = ""
+        self.response = ""
 
         self.bus_off()
 
         # Clear out the rx/tx buffers per manual
         for x in range(5):
-            self.port.write('\r')
+            self.port.write("\r")
 
         self.port.flushInput()
 
@@ -143,11 +143,11 @@ class CANUSB(BaseDriverAPI):
         except serial.SerialTimeoutException:
             pass
 
-        return (bytes_sent == len(cmd))
+        return bytes_sent == len(cmd)
 
     def update_bus_parameters(self, **kwargs):
         # Default values are setup for a 250k connetion
-        br = kwargs.get('bit_rate', '250K')
+        br = kwargs.get("bit_rate", "250K")
         br_cmd = BIT_RATE_CMD.get(br, None)
         if br_cmd:
             return self.__send_command(br_cmd)
@@ -162,13 +162,13 @@ class CANUSB(BaseDriverAPI):
             except queue.Empty:
                 continue
 
-            outbound_msg = ''
+            outbound_msg = ""
             if can_msg.extended:
                 id_str = "T%08X" % (can_msg.id & 0x1FFFFFFF)
-                ack = 'Z\r'
+                ack = "Z\r"
             else:
                 id_str = "t%03X" % (can_msg.id & 0x7FF)
-                ack = 'z\r'
+                ack = "z\r"
 
             outbound_msg += id_str
             outbound_msg += "%X" % (can_msg.dlc)
@@ -186,14 +186,14 @@ class CANUSB(BaseDriverAPI):
             bytes_to_read = self.port.inWaiting()
             if bytes_to_read > 0:
                 self.rx_buffer += self.port.read(bytes_to_read)
-            elif self.rx_buffer != '':
+            elif self.rx_buffer != "":
                 pass  # There is buffered data to process
             else:
                 # There is no pending data - use the serial port to
                 # throttle the thread
                 self.rx_buffer += self.port.read()
 
-            msg = ''
+            msg = ""
             for term in TERMINATORS:
                 # Look for the 1st command
                 if term in self.rx_buffer:
@@ -210,7 +210,7 @@ class CANUSB(BaseDriverAPI):
 
                 if hdr in STD_MSG_HEADERS:
                     try:
-                        if hdr == 'T':  # 29 bit message
+                        if hdr == "T":  # 29 bit message
                             e_id = 9  # ending can_id index
                             ext = True
                         else:  # hdr == 't' # 11 bit message
@@ -227,16 +227,16 @@ class CANUSB(BaseDriverAPI):
 
                         # Get the payload
                         s_payload = e_dlc
-                        e_payload = s_payload + dlc*2
+                        e_payload = s_payload + dlc * 2
                         payload = []
                         for x in range(s_payload, e_payload, 2):
-                            val = int(msg[x:x+2], 16)
+                            val = int(msg[x : x + 2], 16)
                             payload.append(val)
 
                         # Get the timestamp (if any)
                         timestamp = 0
                         if len(msg[e_payload:-1]) == 4:
-                            timestamp = int(msg[e_payload+1:-1], 16)
+                            timestamp = int(msg[e_payload + 1 : -1], 16)
 
                         # Build the message
                         new_msg = CANMessage(can_id, payload, ext, timestamp)
