@@ -7,7 +7,7 @@ import os
 import time
 import threading
 import unittest
-import ConfigParser
+import configparser
 import pycan.drivers.canusb as driver
 from pycan.common import CANMessage
 
@@ -23,7 +23,7 @@ class CANUSBTests(unittest.TestCase):
 
     def __load_test_config(self):
         test_path = os.path.dirname(os.path.abspath(__file__))
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(os.path.join(test_path, 'test.cfg'))
 
         self.known_can_id = int(config.get('COMMON', 'Known_ID_On_Bus'), 16)

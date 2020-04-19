@@ -19,8 +19,8 @@ Driver Requirements:
 import time
 import sys
 import threading
-import Queue
-import basedriver
+import queue
+from pycan.drivers.basedriver import BaseDriverAPI
 from pycan.common import CANMessage
 import serial
 
@@ -49,7 +49,7 @@ CLOSE_CMD = 'C\r'
 TIME_STAMP_CMD = 'Z1\r'
 
 
-class CANUSB(basedriver.BaseDriverAPI):
+class CANUSB(BaseDriverAPI):
     def __init__(self, **kwargs):
         # Open the COM port
         port = kwargs['com_port']  # Throws key error
@@ -77,9 +77,9 @@ class CANUSB(basedriver.BaseDriverAPI):
         self.bus_on()
 
         # Build the inbound and output buffers
-        self.inbound = Queue.Queue(MAX_BUFFER_SIZE)
+        self.inbound = queue.Queue(MAX_BUFFER_SIZE)
         self.inbound_count = 0
-        self.outbound = Queue.Queue(MAX_BUFFER_SIZE)
+        self.outbound = queue.Queue(MAX_BUFFER_SIZE)
         self.outbound_count = 0
 
         # Tell python to check for signals less often (default 1000)
@@ -108,7 +108,7 @@ class CANUSB(basedriver.BaseDriverAPI):
                 self.outbound.put(message, timeout=QUEUE_DELAY)
                 self.outbound_count += 1
                 return True
-            except Queue.Full:
+            except queue.Full:
                 pass
 
     def next_message(self, timeout=None):
@@ -122,7 +122,7 @@ class CANUSB(basedriver.BaseDriverAPI):
                 new_msg = self.inbound.get(timeout=QUEUE_DELAY)
                 self.inbound_count += 1
                 return new_msg
-            except Queue.Empty:
+            except queue.Empty:
                 pass
 
     def life_time_sent(self):
@@ -155,9 +155,9 @@ class CANUSB(basedriver.BaseDriverAPI):
     def __process_outbound_queue(self):
         while self._running.is_set():
             try:
-                # Read the Queue - allow the timeout to throttle the thread
+                # Read the queue - allow the timeout to throttle the thread
                 can_msg = self.outbound.get(timeout=QUEUE_DELAY)
-            except Queue.Empty:
+            except queue.Empty:
                 continue
 
             outbound_msg = ''
@@ -241,7 +241,7 @@ class CANUSB(basedriver.BaseDriverAPI):
 
                         try:
                             self.inbound.put(new_msg, timeout=QUEUE_DELAY)
-                        except Queue.Full:
+                        except queue.Full:
                             # TODO: flag error
                             pass
 
