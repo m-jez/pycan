@@ -18,7 +18,7 @@ class CANUSBTests(unittest.TestCase):
             self.driver.bus_off()
             self.driver.shutdown()
             time.sleep(2)
-        except:
+        except Exception:
             pass
 
     def __load_test_config(self):

@@ -43,7 +43,7 @@ class CANDriverTests(unittest.TestCase):
         try:
             self.driver.shutdown()
             time.sleep(1)
-        except:
+        except Exception:
             pass
 
     def testPEP8Compliance(self):

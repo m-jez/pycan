@@ -15,7 +15,7 @@ class SimCANTests(unittest.TestCase):
         try:
             self.driver.shutdown()
             time.sleep(2)
-        except:
+        except Exception:
             pass
 
     def testPEP8Compliance(self):
