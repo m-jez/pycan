@@ -46,7 +46,6 @@ class ASCParser(object):
             if word in split_line:
                 return self.next_message
 
-
         # Check that the line has all the common line items
         if len(split_line) < 5:
             return self.next_message

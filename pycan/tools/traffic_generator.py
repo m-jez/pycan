@@ -13,4 +13,3 @@ among a
 class TrafficGenerator(object):
     def __init__(self, driver):
         pass
-

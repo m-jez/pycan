@@ -83,7 +83,7 @@ class CyclicComm(object):
                     self._cyclic_fastest_rate = rate
 
                 return True
-            except:
+            except Exception:
                 return False
 
     def update_cyclic_message(self, message, desc=None):
@@ -136,4 +136,3 @@ class CyclicComm(object):
                 if new_msg.id == can_id or can_id is None:
                     if new_msg.extended == ext:
                         handler(new_msg)
-

@@ -73,6 +73,7 @@ class Kvaser(basedriver.BaseDriverAPI):
                                         c_uint(kwargs.get("sjw", 2)),
                                         c_uint(kwargs.get("sample_count", 1)),
                                         c_uint(0))
+
     def shutdown(self):
         self._running.clear()
         time.sleep(1)
@@ -149,7 +150,7 @@ class Kvaser(basedriver.BaseDriverAPI):
                                                  c_uint32(CAN_RX_TIMEOUT))
             if status < 0:
                 pass
-                #TODO: Flag errors
+                # TODO: Flag errors
 
             else:
                 # Determine if it is 11bit or 29bit

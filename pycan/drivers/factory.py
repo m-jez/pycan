@@ -20,10 +20,12 @@ import kvaser
 import canusb
 import sim_can
 
-drivers = {"Kvaser" : kvaser.Kvaser,
-           "CANUSB" : canusb.CANUSB,
-           "SIM_CAN" : sim_can.SimCAN,
-          }
+drivers = {
+    "Kvaser": kvaser.Kvaser,
+    "CANUSB": canusb.CANUSB,
+    "SIM_CAN": sim_can.SimCAN,
+}
+
 
 def get_driver(config_file):
     # Load the config file
@@ -34,10 +36,9 @@ def get_driver(config_file):
     selection = config.get('defaults', 'selection')
 
     if selection not in drivers:
-        #TODO: Add a logging error here
+        # TODO: Add a logging error here
         print("Unknown driver selection {sel}!".format(sel=selection))
         return None
-
 
     # Build the keyword arguments to pass to the driver
     kwargs = {}
@@ -56,4 +57,3 @@ def get_driver(config_file):
 
 if __name__ == "__main__":
     d = get_driver('setup.cfg')
-
